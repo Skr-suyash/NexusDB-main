@@ -48,7 +48,7 @@ export default function SQLWorkbench() {
   // Check connection on mount
   useEffect(() => {
     checkConnection();
-    const interval = setInterval(checkConnection, 10000);
+    const interval = setInterval(checkConnection, 30000);
     return () => clearInterval(interval);
   }, []);
 

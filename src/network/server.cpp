@@ -127,6 +127,13 @@ void Server::accept_loop() {
             continue;
         }
 
+        // Log client connection
+        char ip_str[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &client_addr.sin_addr, ip_str, sizeof(ip_str));
+        uint16_t client_port = ntohs(client_addr.sin_port);
+        std::cerr << "[MosaicDB Server] Client connected: "
+                  << ip_str << ":" << client_port << std::endl;
+
         std::lock_guard<std::mutex> lock(threads_mutex_);
         client_threads_.emplace_back(&Server::handle_client, this, client);
     }
@@ -200,6 +207,8 @@ void Server::handle_client(socket_t client_sock) {
                 // Check for PROTO_SQL
                 if (type == PROTO_SQL) {
                     // key contains the SQL string
+                    if (key != "SHOW TABLES")
+                        std::cerr << "[MosaicDB Server] SQL> " << key << std::endl;
                     auto result = executor_.execute_sql(key);
                     resp_status = result.is_error() ? RESP_ERROR : RESP_OK;
 
