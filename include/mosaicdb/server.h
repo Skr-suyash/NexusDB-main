@@ -6,6 +6,8 @@
 #include <vector>
 #include <memory>
 #include "mosaicdb/storage_engine.h"
+#include "mosaicdb/catalog.h"
+#include "mosaicdb/executor.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -28,6 +30,7 @@ constexpr uint8_t PROTO_PUT = 0x01;
 constexpr uint8_t PROTO_GET = 0x02;
 constexpr uint8_t PROTO_DELETE = 0x03;
 constexpr uint8_t PROTO_SCAN = 0x04;
+constexpr uint8_t PROTO_SQL  = 0x05;
 constexpr uint8_t RESP_OK = 0x00;
 constexpr uint8_t RESP_NOT_FOUND = 0x01;
 constexpr uint8_t RESP_ERROR = 0x02;
@@ -46,6 +49,8 @@ public:
 
 private:
     StorageEngine& engine_;
+    Catalog catalog_;
+    Executor executor_;
     uint16_t port_;
     socket_t listen_sock_;
     std::atomic<bool> running_;

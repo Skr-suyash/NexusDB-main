@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""MosaicDB Python Client - connects to MosaicDB TCP server."""
+"""MosaicDB Python Client - connects to MosaicDB TCP server.
+Supports both legacy KV commands and SQL queries."""
 
 import socket
 import struct
@@ -9,6 +10,7 @@ PROTO_PUT = 0x01
 PROTO_GET = 0x02
 PROTO_DELETE = 0x03
 PROTO_SCAN = 0x04
+PROTO_SQL = 0x05
 RESP_OK = 0x00
 RESP_NOT_FOUND = 0x01
 RESP_ERROR = 0x02
@@ -54,6 +56,8 @@ class MosaicDBClient:
         resp_value = self._recv_all(val_size) if val_size > 0 else b""
         return status, resp_value
 
+    # ── Legacy KV Commands ──────────────────────────────────────
+
     def put(self, key, value):
         status, _ = self._request(PROTO_PUT, key, value)
         return status == RESP_OK
@@ -94,6 +98,62 @@ class MosaicDBClient:
             result.append((k, v))
         return result
 
+    # ── SQL Commands ────────────────────────────────────────────
+
+    def execute_sql(self, sql):
+        """Execute a SQL query on the server. Returns a dict with:
+        - 'ok': bool
+        - 'message': str
+        - 'columns': list of column name strings
+        - 'rows': list of list of value strings
+        """
+        status, value = self._request(PROTO_SQL, sql)
+        result = {
+            "ok": status == RESP_OK,
+            "message": "",
+            "columns": [],
+            "rows": [],
+        }
+
+        if len(value) < 4:
+            result["message"] = value.decode("utf-8", errors="replace") if value else "No response"
+            return result
+
+        pos = 0
+
+        def read_u32():
+            nonlocal pos
+            v, = struct.unpack("<I", value[pos:pos+4])
+            pos += 4
+            return v
+
+        def read_str(length):
+            nonlocal pos
+            s = value[pos:pos+length].decode("utf-8", errors="replace")
+            pos += length
+            return s
+
+        # Message
+        msg_len = read_u32()
+        result["message"] = read_str(msg_len)
+
+        # Column names
+        col_count = read_u32()
+        for _ in range(col_count):
+            clen = read_u32()
+            result["columns"].append(read_str(clen))
+
+        # Rows
+        row_count = read_u32()
+        for _ in range(row_count):
+            row = []
+            for _ in range(col_count):
+                vlen = read_u32()
+                row.append(read_str(vlen))
+            result["rows"].append(row)
+
+        return result
+
     def __enter__(self):
         self.connect()
         return self
@@ -102,14 +162,37 @@ class MosaicDBClient:
         self.close()
 
 
+def print_table(columns, rows):
+    """Print a formatted ASCII table."""
+    if not columns:
+        return
+
+    widths = [len(c) for c in columns]
+    for row in rows:
+        for i, val in enumerate(row):
+            if i < len(widths):
+                widths[i] = max(widths[i], len(str(val)))
+
+    sep = "+" + "+".join("-" * (w + 2) for w in widths) + "+"
+
+    print(sep)
+    print("|" + "|".join(f" {c:<{widths[i]}} " for i, c in enumerate(columns)) + "|")
+    print(sep)
+    for row in rows:
+        print("|" + "|".join(f" {str(row[i]) if i < len(row) else '':<{widths[i]}} " for i in range(len(columns))) + "|")
+    print(sep)
+
+
 def interactive_mode(host, port):
-    print(f"MosaicDB Client - connecting to {host}:{port}")
+    print(f"MosaicDB SQL Client - connecting to {host}:{port}")
     try:
         with MosaicDBClient(host, port) as client:
-            print("Connected. Commands: PUT key value | GET key | DELETE key | quit")
+            print("Connected. Enter SQL queries or 'quit' to exit.")
+            print("Examples: CREATE TABLE, INSERT INTO, SELECT, UPDATE, DELETE, SHOW TABLES")
+            print()
             while True:
                 try:
-                    line = input("MosaicDB> ").strip()
+                    line = input("MosaicSQL> ").strip()
                 except (EOFError, KeyboardInterrupt):
                     break
                 if not line:
@@ -117,24 +200,19 @@ def interactive_mode(host, port):
                 if line.lower() in ("quit", "exit"):
                     break
 
-                parts = line.split(None, 2)
-                cmd = parts[0].upper()
+                result = client.execute_sql(line)
 
-                if cmd == "PUT" and len(parts) >= 3:
-                    ok = client.put(parts[1], parts[2])
-                    print("OK" if ok else "ERROR")
-                elif cmd == "GET" and len(parts) >= 2:
-                    val = client.get(parts[1])
-                    print(val if val is not None else "NOT_FOUND")
-                elif cmd == "DELETE" and len(parts) >= 2:
-                    ok = client.delete(parts[1])
-                    print("OK" if ok else "ERROR")
-                elif cmd == "SCAN" and len(parts) >= 3:
-                    res = client.scan(parts[1], parts[2])
-                    for k, v in res:
-                        print(f"{k} => {v}")
+                if not result["ok"]:
+                    print(f"ERROR: {result['message']}")
+                elif result["columns"] and result["rows"]:
+                    print_table(result["columns"], result["rows"])
+                    print(result["message"])
+                elif result["columns"] and not result["rows"]:
+                    print_table(result["columns"], [])
+                    print("0 row(s) returned.")
                 else:
-                    print("Usage: PUT key value | GET key | DELETE key | SCAN start end")
+                    print(result["message"])
+
     except ConnectionRefusedError:
         print(f"Error: Cannot connect to {host}:{port}")
         sys.exit(1)

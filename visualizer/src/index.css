@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0a0a0f;
+  --color-surface: #12121a;
+  --color-surface-2: #1a1a28;
+  --color-border: #2a2a3a;
+  --color-accent-cyan: #00f0ff;
+  --color-accent-green: #00ff88;
+  --color-accent-red: #ff3355;
+  --color-accent-yellow: #ffcc00;
+  --color-accent-orange: #ff8833;
+  --color-text: #e0e0e0;
+  --color-text-dim: #666680;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+/* Glitch effect for crash simulation */
+@keyframes glitch {
+  0% { transform: translate(0); filter: hue-rotate(0deg) brightness(1); }
+  10% { transform: translate(-5px, 3px); filter: hue-rotate(90deg) brightness(1.5); }
+  20% { transform: translate(5px, -3px); filter: hue-rotate(180deg) brightness(0.5); }
+  30% { transform: translate(-3px, -5px); filter: hue-rotate(270deg) brightness(2); }
+  40% { transform: translate(3px, 5px); filter: hue-rotate(360deg) brightness(0.3); }
+  50% { transform: translate(-5px, -3px); filter: hue-rotate(90deg) brightness(1.8); }
+  60% { transform: translate(5px, 3px); filter: hue-rotate(180deg) brightness(0.7); }
+  70% { transform: translate(-3px, 5px); filter: hue-rotate(270deg) brightness(1.5); }
+  80% { transform: translate(3px, -5px); filter: hue-rotate(0deg) brightness(2); }
+  90% { transform: translate(-5px, 3px); filter: hue-rotate(90deg) brightness(0.5); }
+  100% { transform: translate(0); filter: hue-rotate(0deg) brightness(1); }
+}
+
+.glitch-active {
+  animation: glitch 0.5s ease-in-out;
+}
+
+@keyframes scanline-sweep {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 0% 100%; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.8); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: '█';
+  animation: blink 1s step-end infinite;
+  color: var(--color-accent-green);
+}

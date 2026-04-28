@@ -1,6 +1,7 @@
 #include "mosaicdb/server.h"
 #include <iostream>
 #include <cstring>
+#include <sstream>
 
 #ifdef _WIN32
 #pragma comment(lib, "ws2_32.lib")
@@ -9,7 +10,8 @@
 namespace mosaicdb {
 
 Server::Server(StorageEngine& engine, uint16_t port)
-    : engine_(engine), port_(port), listen_sock_(INVALID_SOCK), running_(false) {
+    : engine_(engine), catalog_(engine), executor_(engine, catalog_),
+      port_(port), listen_sock_(INVALID_SOCK), running_(false) {
 #ifdef _WIN32
     WSADATA wsa;
     WSAStartup(MAKEWORD(2, 2), &wsa);
@@ -195,7 +197,49 @@ void Server::handle_client(socket_t client_sock) {
                 break;
             }
             default:
-                resp_status = RESP_ERROR;
+                // Check for PROTO_SQL
+                if (type == PROTO_SQL) {
+                    // key contains the SQL string
+                    auto result = executor_.execute_sql(key);
+                    resp_status = result.is_error() ? RESP_ERROR : RESP_OK;
+
+                    // Serialize QueryResult to resp_value
+                    // Format: status_msg_len(4) + status_msg + col_count(4)
+                    //         [col_name_len(4) + col_name]...
+                    //         row_count(4)
+                    //         [for each row: [val_len(4) + val_str]... ]
+                    std::string msg = result.message;
+                    uint8_t sbuf[4];
+
+                    encode_u32_le(sbuf, static_cast<uint32_t>(msg.size()));
+                    resp_value.append(reinterpret_cast<const char*>(sbuf), 4);
+                    resp_value.append(msg);
+
+                    uint32_t col_count = static_cast<uint32_t>(result.column_names.size());
+                    encode_u32_le(sbuf, col_count);
+                    resp_value.append(reinterpret_cast<const char*>(sbuf), 4);
+
+                    for (const auto& col : result.column_names) {
+                        encode_u32_le(sbuf, static_cast<uint32_t>(col.size()));
+                        resp_value.append(reinterpret_cast<const char*>(sbuf), 4);
+                        resp_value.append(col);
+                    }
+
+                    uint32_t row_count = static_cast<uint32_t>(result.rows.size());
+                    encode_u32_le(sbuf, row_count);
+                    resp_value.append(reinterpret_cast<const char*>(sbuf), 4);
+
+                    for (const auto& row : result.rows) {
+                        for (const auto& val : row) {
+                            std::string vs = val.to_string();
+                            encode_u32_le(sbuf, static_cast<uint32_t>(vs.size()));
+                            resp_value.append(reinterpret_cast<const char*>(sbuf), 4);
+                            resp_value.append(vs);
+                        }
+                    }
+                } else {
+                    resp_status = RESP_ERROR;
+                }
                 break;
         }
 
