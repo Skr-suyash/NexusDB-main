@@ -151,7 +151,7 @@ export default function CompactionView() {
                               }}
                             >
                               <span style={{ color: COLORS.yellow }}>{entry.key}</span>
-                              {entry.isTombstone ? ' 🪦' :
+                              {entry.isTombstone ? ' ' :
                                 <span style={{ color: COLORS.dim }}> = {(entry.value || '').substring(0, 20)}{(entry.value || '').length > 20 ? '…' : ''}</span>
                               }
                             </motion.div>

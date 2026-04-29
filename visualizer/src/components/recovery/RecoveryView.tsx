@@ -123,9 +123,9 @@ export default function RecoveryView() {
         setFlashRed(true);
         setTimeout(() => setFlashRed(false), 500);
         setCmdHistory(prev => [...prev,
-          `[WAL] Record #${scannerPos}: CRC32 MISMATCH!`,
-          `[WAL]   Stored:   ${storedCrc.toUpperCase()}`,
-          `[WAL]   Computed: ${computedCrc}`,
+        `[WAL] Record #${scannerPos}: CRC32 MISMATCH!`,
+        `[WAL]   Stored:   ${storedCrc.toUpperCase()}`,
+        `[WAL]   Computed: ${computedCrc}`,
           `[WAL] ✗ Recovery HALTED — corrupt record discarded`,
         ]);
         setPhase('recovered');
@@ -290,7 +290,7 @@ export default function RecoveryView() {
                 fontFamily: 'Inter, sans-serif',
               }}
             >
-              💥 Simulate Power Loss
+              Simulate Power Loss
             </button>
           )}
           {phase === 'crashed' && (
@@ -340,11 +340,11 @@ export default function RecoveryView() {
             {cmdHistory.map((line, i) => (
               <div key={i} style={{
                 color: line.startsWith('>') ? COLORS.text :
-                       line.includes('✓') ? COLORS.green :
-                       line.includes('✗') || line.includes('MISMATCH') || line.includes('HALTED') ? COLORS.red :
-                       line.includes('[ENGINE]') || line.includes('[WAL]') ? COLORS.cyan :
-                       line.includes('***') ? COLORS.red :
-                       COLORS.dim,
+                  line.includes('✓') ? COLORS.green :
+                    line.includes('✗') || line.includes('MISMATCH') || line.includes('HALTED') ? COLORS.red :
+                      line.includes('[ENGINE]') || line.includes('[WAL]') ? COLORS.cyan :
+                        line.includes('***') ? COLORS.red :
+                          COLORS.dim,
                 fontWeight: line.includes('***') ? 700 : 400,
               }}>
                 {line}

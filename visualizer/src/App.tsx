@@ -37,19 +37,19 @@ export default function App() {
           <TabButton
             active={activeTab === 'compaction'}
             onClick={() => setActiveTab('compaction')}
-            icon="⚡"
+            icon=""
             label="Compaction Matrix"
           />
           <TabButton
             active={activeTab === 'recovery'}
             onClick={() => setActiveTab('recovery')}
-            icon="💥"
+            icon=""
             label="Crash & Recover"
           />
           <TabButton
             active={activeTab === 'workbench'}
             onClick={() => setActiveTab('workbench')}
-            icon="🗄️"
+            icon=""
             label="SQL Workbench"
           />
         </nav>
