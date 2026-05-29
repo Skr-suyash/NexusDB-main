@@ -151,3 +151,9 @@ npm run dev
 
 The project includes an extensive test suite verifying everything from WAL integrity to network behavior. Test executables (e.g. `test_wal.exe`, `test_sql.exe`) are output to the `build/` directory. You can also run the integration tests using the Python test script (`test_network.py`).
 
+## Images
+
+|  |  |
+|---|---|
+| <img width="600" src="https://github.com/user-attachments/assets/55f28767-c9b4-4270-b42c-8b016d545ea8" /> | <img width="400" src="https://github.com/user-attachments/assets/aad59813-cf1f-483a-a7ad-f9fecd1a04d8" /> |
+| <img width="600" src="https://github.com/user-attachments/assets/16590f2d-d8a5-44b1-993c-7a68c1f4697e" /> | <img width="400" src="https://github.com/user-attachments/assets/f20e58ea-3ee5-4aac-aa54-ef35247173f9" /> |
