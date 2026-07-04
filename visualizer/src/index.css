@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0a0a0f;
-  --color-surface: #12121a;
-  --color-surface-2: #1a1a28;
-  --color-border: #2a2a3a;
-  --color-accent-cyan: #00f0ff;
-  --color-accent-green: #00ff88;
-  --color-accent-red: #ff3355;
-  --color-accent-yellow: #ffcc00;
-  --color-accent-orange: #ff8833;
-  --color-text: #e0e0e0;
-  --color-text-dim: #666680;
+  --color-bg: #09090b;
+  --color-surface: #18181b;
+  --color-surface-2: #27272a;
+  --color-border: #27272a;
+  --color-accent-cyan: #38bdf8;
+  --color-accent-green: #10b981;
+  --color-accent-red: #ef4444;
+  --color-accent-yellow: #eab308;
+  --color-accent-orange: #f97316;
+  --color-text: #fafafa;
+  --color-text-dim: #a1a1aa;
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'Inter', sans-serif;
 }
@@ -41,33 +41,16 @@ body {
   border-radius: 3px;
 }
 
-/* Glitch effect for crash simulation */
-@keyframes glitch {
-  0% { transform: translate(0); filter: hue-rotate(0deg) brightness(1); }
-  10% { transform: translate(-5px, 3px); filter: hue-rotate(90deg) brightness(1.5); }
-  20% { transform: translate(5px, -3px); filter: hue-rotate(180deg) brightness(0.5); }
-  30% { transform: translate(-3px, -5px); filter: hue-rotate(270deg) brightness(2); }
-  40% { transform: translate(3px, 5px); filter: hue-rotate(360deg) brightness(0.3); }
-  50% { transform: translate(-5px, -3px); filter: hue-rotate(90deg) brightness(1.8); }
-  60% { transform: translate(5px, 3px); filter: hue-rotate(180deg) brightness(0.7); }
-  70% { transform: translate(-3px, 5px); filter: hue-rotate(270deg) brightness(1.5); }
-  80% { transform: translate(3px, -5px); filter: hue-rotate(0deg) brightness(2); }
-  90% { transform: translate(-5px, 3px); filter: hue-rotate(90deg) brightness(0.5); }
-  100% { transform: translate(0); filter: hue-rotate(0deg) brightness(1); }
+/* Subtle shake effect for crash simulation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
 }
 
 .glitch-active {
-  animation: glitch 0.5s ease-in-out;
-}
-
-@keyframes scanline-sweep {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 0% 100%; }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.8); }
+  animation: shake 0.4s ease-in-out;
 }
 
 @keyframes blink {

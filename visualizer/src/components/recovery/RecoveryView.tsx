@@ -4,9 +4,9 @@ import { crc32Hex, buildWALPayload, toHexArray } from '../../utils/crc32';
 import type { WALRecord, RecoveryPhase } from '../../types/database';
 
 const COLORS = {
-  cyan: '#00f0ff', green: '#00ff88', red: '#ff3355',
-  yellow: '#ffcc00', orange: '#ff8833', surface: '#12121a',
-  surface2: '#1a1a28', border: '#2a2a3a', text: '#e0e0e0', dim: '#666680',
+  cyan: '#38bdf8', green: '#10b981', red: '#ef4444',
+  yellow: '#eab308', orange: '#f97316', surface: '#18181b',
+  surface2: '#27272a', border: '#3f3f46', text: '#fafafa', dim: '#a1a1aa',
 };
 
 let nextRecordId = 0;
@@ -166,8 +166,8 @@ export default function RecoveryView() {
   return (
     <div className={isGlitching ? 'glitch-active' : ''} style={{
       height: 'calc(100vh - 64px)', display: 'flex', padding: '20px', gap: '16px',
-      ...(flashRed ? { boxShadow: 'inset 0 0 80px rgba(255,51,85,0.3)' } : {}),
-      transition: 'box-shadow 0.3s',
+      ...(flashRed ? { border: `1px solid ${COLORS.red}`, boxShadow: `inset 0 0 0 1px ${COLORS.red}33` } : {}),
+      transition: 'all 0.3s',
     }}>
       {/* LEFT: Engine Canvas */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -194,7 +194,7 @@ export default function RecoveryView() {
                 transition={{ duration: 0.3 }}
                 style={{
                   padding: '6px 10px', marginBottom: '3px', borderRadius: '4px', fontSize: '12px',
-                  fontFamily: 'JetBrains Mono', background: '#00ff8808', border: '1px solid #00ff8822',
+                  fontFamily: 'JetBrains Mono', background: COLORS.surface2, border: `1px solid ${COLORS.border}`,
                 }}
               >
                 <span style={{ color: COLORS.yellow }}>{entry.key}</span>
@@ -220,8 +220,8 @@ export default function RecoveryView() {
           ) : walRecords.map((rec, recIdx) => (
             <div key={rec.id} style={{
               marginBottom: '6px', padding: '8px', borderRadius: '6px',
-              background: scannerPos === recIdx ? '#00f0ff11' : rec.validationResult === 'fail' ? '#ff335522' : rec.validationResult === 'pass' ? '#00ff8808' : '#ffffff04',
-              border: `1px solid ${scannerPos === recIdx ? COLORS.cyan + '66' : rec.validationResult === 'fail' ? COLORS.red + '66' : 'transparent'}`,
+              background: scannerPos === recIdx ? `${COLORS.cyan}1A` : rec.validationResult === 'fail' ? `${COLORS.red}1A` : rec.validationResult === 'pass' ? `${COLORS.green}11` : COLORS.surface2,
+              border: `1px solid ${scannerPos === recIdx ? COLORS.cyan : rec.validationResult === 'fail' ? COLORS.red : COLORS.border}`,
               transition: 'all 0.3s',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -259,8 +259,8 @@ export default function RecoveryView() {
                       style={{
                         fontSize: '11px', fontFamily: 'JetBrains Mono', color,
                         padding: '1px 3px', borderRadius: '2px', cursor: 'pointer',
-                        background: isCorruptedByte ? '#ff335533' : 'transparent',
-                        border: isCorruptedByte ? `1px solid ${COLORS.red}` : '1px solid transparent',
+                        background: isCorruptedByte ? `${COLORS.red}22` : 'transparent',
+                        border: `1px solid ${isCorruptedByte ? COLORS.red : 'transparent'}`,
                         transition: 'all 0.2s',
                       }}
                     >
@@ -281,13 +281,12 @@ export default function RecoveryView() {
           {phase === 'active' && (
             <button onClick={simulateCrash} disabled={walRecords.length === 0}
               style={{
-                flex: 1, padding: '14px', borderRadius: '10px', fontSize: '14px', fontWeight: 800,
-                background: walRecords.length === 0 ? '#1a1a28' : 'linear-gradient(135deg, #ff3355, #ff1133)',
-                color: walRecords.length === 0 ? '#444' : '#fff',
-                border: `2px solid ${walRecords.length === 0 ? '#333' : COLORS.red}`,
+                flex: 1, padding: '10px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600,
+                background: walRecords.length === 0 ? COLORS.surface2 : COLORS.red,
+                color: walRecords.length === 0 ? COLORS.dim : '#fff',
+                border: 'none',
                 cursor: walRecords.length === 0 ? 'not-allowed' : 'pointer',
-                boxShadow: walRecords.length > 0 ? `0 0 20px ${COLORS.red}44` : 'none',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--font-sans)', transition: 'all 0.2s',
               }}
             >
               Simulate Power Loss
@@ -296,11 +295,11 @@ export default function RecoveryView() {
           {phase === 'crashed' && (
             <button onClick={rebootRecover}
               style={{
-                flex: 1, padding: '14px', borderRadius: '10px', fontSize: '14px', fontWeight: 800,
-                background: `linear-gradient(135deg, ${COLORS.cyan}, #0088ff)`,
-                color: '#000', border: `2px solid ${COLORS.cyan}`,
-                cursor: 'pointer', boxShadow: `0 0 20px ${COLORS.cyan}44`,
-                fontFamily: 'Inter, sans-serif',
+                flex: 1, padding: '10px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600,
+                background: COLORS.cyan,
+                color: '#000', border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-sans)', transition: 'all 0.2s',
               }}
             >
               🔄 Reboot & Recover
@@ -308,10 +307,10 @@ export default function RecoveryView() {
           )}
           {(phase === 'recovered' || phase === 'active') && (
             <button onClick={reset} style={{
-              padding: '14px 20px', borderRadius: '10px', fontSize: '13px', fontWeight: 600,
-              background: COLORS.surface2, color: COLORS.orange,
-              border: `1px solid ${COLORS.orange}44`, cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif',
+              padding: '10px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 500,
+              background: 'transparent', color: COLORS.dim,
+              border: `1px solid ${COLORS.border}`, cursor: 'pointer',
+              fontFamily: 'var(--font-sans)', transition: 'all 0.2s',
             }}>↻ Reset</button>
           )}
         </div>

@@ -5,9 +5,9 @@ import type { SSTableMeta, KVEntry, CompactionMetrics } from '../../types/databa
 import type { CompactionStep } from '../../utils/mockData';
 
 const COLORS = {
-  cyan: '#00f0ff', green: '#00ff88', red: '#ff3355',
-  yellow: '#ffcc00', orange: '#ff8833', surface: '#12121a',
-  surface2: '#1a1a28', border: '#2a2a3a', text: '#e0e0e0', dim: '#666680',
+  cyan: '#38bdf8', green: '#10b981', red: '#ef4444',
+  yellow: '#eab308', orange: '#f97316', surface: '#18181b',
+  surface2: '#27272a', border: '#3f3f46', text: '#fafafa', dim: '#a1a1aa',
 };
 
 export default function CompactionView() {
@@ -142,11 +142,10 @@ export default function CompactionView() {
                               style={{
                                 padding: '4px 8px', borderRadius: '4px', fontSize: '11px',
                                 fontFamily: 'JetBrains Mono',
-                                background: isActive ? '#00f0ff22' : entry.isTombstone ? '#ff335511' : '#ffffff06',
-                                border: `1px solid ${isActive ? COLORS.cyan : entry.isTombstone ? COLORS.red + '44' : 'transparent'}`,
+                                background: isActive ? `${COLORS.cyan}1A` : entry.isTombstone ? `${COLORS.red}11` : `${COLORS.surface2}`,
+                                border: `1px solid ${isActive ? COLORS.cyan : entry.isTombstone ? COLORS.red + '44' : COLORS.border}`,
                                 color: entry.isTombstone ? COLORS.red : COLORS.text,
                                 textDecoration: entry.isTombstone ? 'line-through' : 'none',
-                                boxShadow: isActive ? `0 0 12px ${COLORS.cyan}44` : 'none',
                                 transition: 'all 0.3s',
                               }}
                             >
@@ -180,8 +179,7 @@ export default function CompactionView() {
                   Merging Key
                 </div>
                 <div style={{
-                  fontSize: '16px', fontWeight: 700, fontFamily: 'JetBrains Mono', color: COLORS.cyan,
-                  textShadow: `0 0 20px ${COLORS.cyan}66`,
+                  fontSize: '16px', fontWeight: 600, fontFamily: 'JetBrains Mono', color: COLORS.cyan,
                 }}>
                   {highlightKey}
                 </div>
@@ -192,8 +190,7 @@ export default function CompactionView() {
           {/* Output SSTable */}
           <div style={{
             padding: '16px', background: COLORS.surface, borderRadius: '12px',
-            border: `1px solid ${isDone ? COLORS.green + '66' : COLORS.border}`,
-            boxShadow: isDone ? `0 0 30px ${COLORS.green}22` : 'none',
+            border: `1px solid ${isDone ? COLORS.green : COLORS.border}`,
             transition: 'all 0.5s', flex: 1, overflow: 'auto',
           }}>
             <h3 style={{ fontSize: '13px', fontWeight: 700, color: isDone ? COLORS.green : COLORS.dim, marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -209,8 +206,8 @@ export default function CompactionView() {
                     transition={{ duration: 0.3 }}
                     style={{
                       padding: '4px 8px', borderRadius: '4px', fontSize: '11px',
-                      fontFamily: 'JetBrains Mono', background: '#00ff8808',
-                      border: '1px solid transparent',
+                      fontFamily: 'JetBrains Mono', background: `${COLORS.green}11`,
+                      border: `1px solid ${COLORS.green}33`,
                     }}
                   >
                     <span style={{ color: COLORS.green }}>✓</span>{' '}
@@ -257,8 +254,8 @@ export default function CompactionView() {
 function MetricCard({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div style={{
-      padding: '16px', background: '#12121a', borderRadius: '12px',
-      border: `1px solid ${color}22`,
+      padding: '16px', background: COLORS.surface, borderRadius: '12px',
+      border: `1px solid ${COLORS.border}`,
     }}>
       <div style={{ fontSize: '11px', color: '#666680', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '1px' }}>
         {label}
@@ -277,9 +274,9 @@ function MetricCard({ label, value, color }: { label: string; value: number; col
 
 function btnStyle(color: string, disabled: boolean): React.CSSProperties {
   return {
-    padding: '8px 18px', borderRadius: '8px', border: `1px solid ${color}44`,
-    background: disabled ? '#1a1a28' : `${color}18`, color: disabled ? '#444' : color,
-    fontSize: '13px', fontWeight: 600, cursor: disabled ? 'not-allowed' : 'pointer',
-    fontFamily: 'Inter, sans-serif', transition: 'all 0.2s',
+    padding: '8px 18px', borderRadius: '8px', border: `1px solid ${disabled ? COLORS.border : color + '44'}`,
+    background: disabled ? COLORS.surface2 : `${color}11`, color: disabled ? COLORS.dim : color,
+    fontSize: '13px', fontWeight: 500, cursor: disabled ? 'not-allowed' : 'pointer',
+    fontFamily: 'var(--font-sans)', transition: 'all 0.15s ease',
   };
 }

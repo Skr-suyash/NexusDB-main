@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/compaction/compactionview.tsx","./src/components/recovery/recoveryview.tsx","./src/components/workbench/sqlworkbench.tsx","./src/types/database.ts","./src/utils/crc32.ts","./src/utils/mockdata.ts"],"version":"5.7.3"}

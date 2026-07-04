@@ -2,9 +2,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const COLORS = {
-  cyan: '#00f0ff', green: '#00ff88', red: '#ff3355',
-  yellow: '#ffcc00', orange: '#ff8833', surface: '#12121a',
-  surface2: '#1a1a28', border: '#2a2a3a', text: '#e0e0e0', dim: '#666680',
+  cyan: '#38bdf8', green: '#10b981', red: '#ef4444',
+  yellow: '#eab308', orange: '#f97316', surface: '#18181b',
+  surface2: '#27272a', border: '#3f3f46', text: '#fafafa', dim: '#a1a1aa',
 };
 
 const PROXY_URL = 'http://localhost:3001';
@@ -126,12 +126,12 @@ export default function SQLWorkbench() {
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px' }}>
             <button onClick={() => executeSQL()} disabled={isExecuting || !sql.trim()}
               style={{
-                padding: '6px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: 700,
-                background: isExecuting || !sql.trim() ? '#1a1a28' : `${COLORS.green}20`,
-                color: isExecuting || !sql.trim() ? '#444' : COLORS.green,
-                border: `1px solid ${isExecuting || !sql.trim() ? '#333' : COLORS.green + '44'}`,
+                padding: '6px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
+                background: isExecuting || !sql.trim() ? COLORS.surface2 : COLORS.green,
+                color: isExecuting || !sql.trim() ? COLORS.dim : '#000',
+                border: 'none',
                 cursor: isExecuting || !sql.trim() ? 'not-allowed' : 'pointer',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--font-sans)',
               }}
             >
               {isExecuting ? '⏳ Running...' : '▶ Execute'} <span style={{ fontSize: '10px', opacity: 0.6 }}>Ctrl+Enter</span>
@@ -197,8 +197,8 @@ export default function SQLWorkbench() {
               <div style={{
                 padding: '12px 16px', borderRadius: '6px', fontSize: '13px',
                 fontFamily: 'JetBrains Mono',
-                background: activeResult.result.ok ? `${COLORS.green}08` : `${COLORS.red}08`,
-                border: `1px solid ${activeResult.result.ok ? COLORS.green + '33' : COLORS.red + '33'}`,
+                background: activeResult.result.ok ? `${COLORS.green}1A` : `${COLORS.red}1A`,
+                border: `1px solid ${activeResult.result.ok ? COLORS.green : COLORS.red}`,
                 color: activeResult.result.ok ? COLORS.green : COLORS.red,
               }}>
                 {activeResult.result.ok ? '✓ ' : '✗ ERROR: '}{activeResult.result.message}
@@ -278,8 +278,8 @@ export default function SQLWorkbench() {
                   style={{
                     display: 'block', width: '100%', textAlign: 'left',
                     padding: '8px 10px', marginBottom: '4px', borderRadius: '6px',
-                    border: `1px solid ${activeResult === entry ? COLORS.cyan + '44' : 'transparent'}`,
-                    background: activeResult === entry ? '#00f0ff08' : 'transparent',
+                    border: `1px solid ${activeResult === entry ? COLORS.border : 'transparent'}`,
+                    background: activeResult === entry ? COLORS.surface2 : 'transparent',
                     cursor: 'pointer', fontFamily: 'JetBrains Mono', fontSize: '10px',
                     color: COLORS.text,
                   }}
@@ -323,9 +323,9 @@ function ResultTable({ columns, rows, message }: { columns: string[]; rows: stri
               {columns.map((col, i) => (
                 <th key={i} style={{
                   padding: '8px 12px', textAlign: 'left',
-                  background: COLORS.surface2, color: COLORS.cyan,
-                  borderBottom: `2px solid ${COLORS.cyan}33`,
-                  fontWeight: 700, fontSize: '11px', textTransform: 'uppercase',
+                  background: COLORS.surface2, color: COLORS.dim,
+                  borderBottom: `1px solid ${COLORS.border}`,
+                  fontWeight: 600, fontSize: '11px', textTransform: 'uppercase',
                   letterSpacing: '0.5px', whiteSpace: 'nowrap',
                 }}>
                   {col}
